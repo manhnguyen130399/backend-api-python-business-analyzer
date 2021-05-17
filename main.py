@@ -21,14 +21,13 @@ def getDataCDKT(type1, year, quarter, mack):
         val = []
         for item in data["Values"][i]:
             it = item.get('Value')
-            val.append(it if it == None else round(it/1000000,2))
+            val.append(it if it == None else round(it/10000000,2))
         value.append(val)
         del val
     for i in range(len(value)):
         df.loc[i] = value[i]
     name = data['Name']
     res_cdkt = pd.concat([name, df], axis=1)
-    res_cdkt = res_cdkt.set_index('Name')
     return res_cdkt
 
 ####### Canslim
@@ -39,7 +38,6 @@ def CDKT():
     quarter = request.args.get('quarter')
     mack = request.args.get('symbol')
     res_cdkt = getDataCDKT(type1,year,quarter, mack)
-    # res_cdkt = res_cdkt.reset_index()
     return res_cdkt.to_html()
 
 
@@ -54,14 +52,13 @@ def getDataKQKD(type2, year, quarter, symbol):
         val = []
         for item in data2["Values"][i]:
             it = item.get('Value')
-            val.append(round(it/1000000,2))
+            val.append(round(it/10000000,2))
         value2.append(val)
         del val
     for i in range(len(value2)):
         df2.loc[i] = value2[i]
     name2 = data2['Name']
     res_kqkd = pd.concat([name2, df2], axis=1)
-    res_kqkd = res_kqkd.set_index('Name')
     return res_kqkd
 
 
@@ -72,7 +69,6 @@ def KQKD():
     quarter = request.args.get('quarter')
     symbol = request.args.get('symbol')
     res_kqkd = getDataKQKD(type1,year,quarter,symbol)
-    # res_kqkd = res_kqkd.reset_index()
     return res_kqkd.to_html()
 
 def getDataLCTT(type3, year,quarter,mack):
@@ -86,14 +82,13 @@ def getDataLCTT(type3, year,quarter,mack):
         val = []
         for item in data3["Values"][i]:
             it = item.get('Value')
-            val.append(it if it == None else round(it/1000000,2))
+            val.append(it if it == None else round(it/10000000,2))
         value3.append(val)
         del val
     for i in range(len(value3)):
         df3.loc[i] = value3[i]
     name3 = data3['Name']
     res_lctt = pd.concat([name3, df3], axis=1)
-    res_lctt = res_lctt.set_index('Name')
     return res_lctt
 
 
@@ -104,7 +99,6 @@ def LCTT():
     quarter = request.args.get('quarter')
     mack = request.args.get('symbol')
     res_lctt = getDataLCTT(type3,year,quarter,mack)
-    # res_lctt= res_lctt.reset_index()
     return res_lctt.to_html()
 
 #4M
@@ -114,8 +108,11 @@ def _4M():
     quarter = request.args.get('quarter')
     symbol = request.args.get('symbol')
     res_kqkd = getDataKQKD('2',year,quarter,symbol) # get data KQKD type =2
+    res_kqkd = res_kqkd.set_index('Name')
     res_cdkt = getDataCDKT('1',year,quarter,symbol) # get data CDKT type =1
+    res_cdkt = res_cdkt.set_index('Name')
     res_lctt = getDataLCTT('4',year,quarter,symbol) # get data LCTT type =4
+    res_lctt = res_lctt.set_index('Name')
     df4m = pd.read_json('https://e.cafef.vn/fi.ashx?symbol='+symbol)
     maxyear = df4m['Year'].max()
     df4m = df4m[df4m['Year'] >=df4m['Year'].max() -5]
