@@ -125,7 +125,8 @@ def _4M():
     year_end = [df4m['Year'].max(),df4m['Year'].max(),df4m['Year'].max()]
     df4m['Sales']= res_kqkd.loc['3. Doanh thu thuần (1)-(2)'].values
     roic = res_kqkd.loc['19. Lợi nhuận sau thuế thu nhập doanh nghiệp (15)-(18)']/(res_cdkt.loc['II. Nợ dài hạn'] + res_cdkt.loc['I. Vốn chủ sở hữu'] - \
-                                 res_cdkt.loc['I. Tiền và các khoản tương đương tiền'] - res_cdkt.loc['VII. Lợi thế thương mại'])
+                                 res_cdkt.loc['I. Tiền và các khoản tương đương tiền']) 
+                                #  - res_cdkt.loc['VII. Lợi thế thương mại'])
     df4m['ROIC'] = roic.values
     effectiveness= res_kqkd.loc['3. Doanh thu thuần (1)-(2)'] / res_cdkt.loc['TỔNG CỘNG TÀI SẢN']
     df4m['Effectiveness'] = effectiveness.values
@@ -146,7 +147,7 @@ def _4M():
     df = pd.DataFrame ([], columns = [1,3, 5, 'Tham chieu', 'Ty trong', 'Diem TP', 'Tong'], index=ind4m)
     df.loc['Chi so'] = [0.3, 0.3, 0.4, 0, 0, 0, 0] 
     df['Tham chieu'] = [0 ,0.2 ,0.2 ,0.15 ,0.15 ,0 ,0.1 ,0.1 ,0.1 ,0.15 ,0.2 ,0.15]
-    df['Ty trong'] = [0 ,0.15 ,0.15 ,0.05 ,0.15 , 0.1 ,0.05 ,0.05 ,0.05 ,0.1 ,0.05 ,0.1]
+    df['Ty trong'] = [0 ,0.15 ,0.2 ,0.05 ,0.15 , 0.1 ,0.05 ,0.05 ,0.05 ,0.1 ,0.05 ,0.15]
     index= ['Sales', 'EPS', 'BV', 'Luu chuyen tien thuan tu HDKD', 'Effectiveness', 'Effeciency', 'Productivity', 'ROA', 'ROE', 'ROIC']
     index_res = ['Sales Growth Rate', 'EPS Growth Rate', 'BVPS Growth Rate', 'Luu chuyen tien thuan tu HDKD', 'Effectiveness', 'Efficiency', 'Productivity',\
                 'ROA', 'ROE', 'ROIC']
@@ -158,19 +159,24 @@ def _4M():
             re1 = np.rate(arr[a] ,0,-df4m.loc[index[i], year_start[a]], df4m.loc[index[i], year_end[a]])
             df.loc[index_res[i], arr[a]] = re1
     for i in range(len(index)):
-        val = []
-        for a in range(len(arr)):
+      val = []
+      for a in range(len(arr)):
             if df.loc[index_res[i], arr[a]] > df.loc[index_res[i], 'Tham chieu']:
-                a = df.loc['Chi so', arr[a]]
-            else: a = (df.loc[index_res[i], arr[a]]/ df.loc[index_res[i], 'Tham chieu'])*df.loc['Chi so', arr[a]]
+              if (df.loc['Chi so', arr[a]] >0):
+                 a = df.loc['Chi so', arr[a]]
+              else: a = 0
+            else: 
+              if ((df.loc[index_res[i], arr[a]]/ df.loc[index_res[i], 'Tham chieu'])*df.loc['Chi so', arr[a]]) > 0:
+                  a= (df.loc[index_res[i], arr[a]]/ df.loc[index_res[i], 'Tham chieu'])*df.loc['Chi so', arr[a]]
+              else: a= 0
             val.append(a*100)
-        df.loc[index_res[i], 'Diem TP'] = sum(val)
-        del val
+      df.loc[index_res[i], 'Diem TP'] = sum(val)
+      del val
     df.loc['No dai han nam gan nhat', 1] = df4m.loc['No dai han nam gan nhat', maxyear]
     df.loc['No dai han nam gan nhat', 'Tham chieu'] = res_kqkd.loc['19. Lợi nhuận sau thuế thu nhập doanh nghiệp (15)-(18)'].values[-1] * 3
     if df4m.loc['No dai han nam gan nhat', maxyear] > res_kqkd.loc['19. Lợi nhuận sau thuế thu nhập doanh nghiệp (15)-(18)'].values[-1] * 3:
         df.loc['No dai han nam gan nhat', 'Diem TP'] = 0
-    else: df.loc['No dai han nam gan nhat', 'Diem TP'] = 10
+    else: df.loc['No dai han nam gan nhat', 'Diem TP'] = 100
     #Tinh tong
     index_res1 = ['Sales Growth Rate', 'EPS Growth Rate', 'BVPS Growth Rate', 'Luu chuyen tien thuan tu HDKD', 'No dai han nam gan nhat', 'Effectiveness', 'Efficiency', \
                 'Productivity', 'ROA', 'ROE', 'ROIC']
