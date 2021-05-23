@@ -141,8 +141,8 @@ def _4M():
     df4m.loc['No dai han nam gan nhat', maxyear] = res_cdkt.loc['II. Nợ dài hạn', str(maxyear)]
     ind4m = ['Chi so','Sales Growth Rate', 'EPS Growth Rate', 'BVPS Growth Rate', 'Luu chuyen tien thuan tu HDKD', 'No dai han nam gan nhat', 'Effectiveness', 'Efficiency'\
          , 'Productivity', 'ROA', 'ROE', 'ROIC']
-    df = pd.DataFrame ([], columns = [1,3, 5, 'Tham chieu', 'Ty trong', 'Diem TP', 'Tong'], index=ind4m)
-    df.loc['Chi so'] = [0.3, 0.3, 0.4, 0, 0, 0, 0] 
+    df = pd.DataFrame ([], columns = [1,3, 5, 'Tham chieu', 'Ty trong', 'Diem TP'], index=ind4m)
+    df.loc['Chi so'] = [0.3, 0.3, 0.4, 0, 0, 0] 
     df['Tham chieu'] = [0 ,0.2 ,0.2 ,0.15 ,0.15 ,0 ,0.1 ,0.1 ,0.1 ,0.15 ,0.2 ,0.15]
     df['Ty trong'] = [0 ,0.15 ,0.2 ,0.05 ,0.15 , 0.1 ,0.05 ,0.05 ,0.05 ,0.1 ,0.05 ,0.15]
     index= ['Sales', 'EPS', 'BV', 'Luu chuyen tien thuan tu HDKD', 'Effectiveness', 'Effeciency', 'Productivity', 'ROA', 'ROE', 'ROIC']
@@ -181,8 +181,11 @@ def _4M():
     for i in range(len(df.index) -1):
         total += (df.loc[index_res1[i], 'Ty trong'] * df.loc[index_res1[i], 'Diem TP'])
     #total += df.loc['No dai han nam gan nhat', 'Diem TP']
-    df.loc['Chi so', 'Tong'] = round(total, 2)
-    return df.to_html()
+    # df.loc['Chi so', 'Tong'] = round(total, 2)
+    return {
+        "html":df.to_html(),
+        "total":round(total, 2)
+    }
 
 @app.route('/api/get-info-cty/<id>')
 def getInfoCty(id):
@@ -193,7 +196,7 @@ def getInfoCty(id):
 def getCanSlim():
     mack = request.args.get('mack')
     df = pd.read_csv("canslim.csv")
-    header = ['','','','','','','','','','','','Tham chiếu', 'TỶ TRỌNG TỪNG THÀNH PHẦN', 'C', 'A', 'TỔNG ĐIỂM']
+    header = ['','','','','','','','','','','','Tham chiếu', 'TỶ TRỌNG TỪNG THÀNH PHẦN', 'C', 'A']
     df.columns = header
     df = df.replace(np.nan,'')
     tc = ['',0.25,'', 0.25, '' ,0.2, '',0.2, '', '', 0.25, '', 0.25, '', 0.2, '', 0.2, '']
@@ -286,8 +289,10 @@ def getCanSlim():
     else: df.loc[16,"A"] = (df.iloc[16,10]/df.loc[16,"Tham chiếu"])*df.loc[16,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
     df.loc[0, 'C'] = df.loc[[1, 3, 10, 12], 'C'].sum()
     df.loc[0, 'A'] = df.loc[[5, 7, 14, 16], 'A'].sum()
-    df.loc[0,'TỔNG ĐIỂM'] = df.loc[0, 'C'] + df.loc[0, 'A']
-    return df.to_html()
+    # df.loc[0,'TỔNG ĐIỂM'] = df.loc[0, 'C'] + df.loc[0, 'A']
+    # return df.to_html()
+    return  { "html":df.to_html(),
+    "total": df.loc[0, 'C'] + df.loc[0, 'A']}
 
 if __name__ == '__main__':
     app.run()
