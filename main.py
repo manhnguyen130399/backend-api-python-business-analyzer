@@ -210,7 +210,8 @@ def getCanSlim():
         val = []
         for item in data["Values"][i]:
             it = item.get('Value')
-            val.append(it)
+            # val.append(it)
+            val.append(it if it == None else round(it/10000000,2))
         value.append(val)
         del val
     for i in range(len(value)):
@@ -218,18 +219,18 @@ def getCanSlim():
     name = data['Name']
     res_kqkd = pd.concat([name, df2], axis=1)
     res_kqkd.set_index('Name', inplace=True)
-    df.iloc[2,6] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[1,6]]
+    df.iloc[2,6] = round(res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[1,6]], 0)
     #1 quý gần nhất (C) - Q1 2020
-    df.iloc[2,5] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[1,5]]
+    df.iloc[2,5] = round(res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[1,5]], 0)
     #1 quý trước đó gần nhất (C) - Q4 2019
-    df.iloc[4,5] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[3,5]]
+    df.iloc[4,5] = round(res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[3,5]],0)
     #1 quý trước đó gần nhất (C) - Q1 2020
-    df.iloc[4,6] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[3,6]]
+    df.iloc[4,6] = round(res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[3,6]],0)
     #trailing 12 tháng gần nhất (A)
     #df.iloc[6,[2,3,4,5,6,7,8,9]] = [1,2,3,4,5,6,7,8]
-    df.iloc[6,[2,3,4,5,6,7,8,9]] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[5,[2,3,4,5,6,7,8,9]]].values
+    df.iloc[6,[2,3,4,5,6,7,8,9]] = round(res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[5,[2,3,4,5,6,7,8,9]]],0).values
     #trailing 12 tháng gần nhất trước đó (A)
-    df.iloc[8,[2,3,4,5,6,7,8,9]] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[7,[2,3,4,5,6,7,8,9]]].values
+    df.iloc[8,[2,3,4,5,6,7,8,9]] = round(res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[7,[2,3,4,5,6,7,8,9]]],0).values
     df.iloc[1,10] = round((df.iloc[2,6] - df.iloc[2,5])/df.iloc[2,5],2)
     df.iloc[3,10] = round((df.iloc[4,6] - df.iloc[4,5])/df.iloc[4,5],2)
     df.iloc[5,10] = round((df.iloc[6,[6,7,8,9]].sum() - df.iloc[6,[2,3,4,5]].sum())/df.iloc[6,[2,3,4,5]].sum(),2)
@@ -252,21 +253,21 @@ def getCanSlim():
     canslim["Period"] = 'Q'+canslim['Quarter'].astype(str) +' '+ canslim['Year'].astype(str) 
     #Tieu chi EPS
     #1 quý gần nhất (C) - Q1 2021
-    df.iloc[11,6] = canslim[canslim['Period'] == df.iloc[1,6]]['DilutedEPS_MRQ'].values[0]
+    df.iloc[11,6] = round(canslim[canslim['Period'] == df.iloc[1,6]],0)['DilutedEPS_MRQ'].values[0]
     #1 quý gần nhất (C) - Q1 2020
-    df.iloc[11,5] = canslim[canslim['Period'] == df.iloc[1,5]]['DilutedEPS_MRQ'].values[0]
+    df.iloc[11,5] = round(canslim[canslim['Period'] == df.iloc[1,5]],0)['DilutedEPS_MRQ'].values[0]
     #1 quý trước đó gần nhất (C) - Q4 2019
-    df.iloc[13,5] = canslim[canslim['Period'] == df.iloc[3,5]]['DilutedEPS_MRQ'].values[0] 
+    df.iloc[13,5] = round(canslim[canslim['Period'] == df.iloc[3,5]],0)['DilutedEPS_MRQ'].values[0] 
     #1 quý trước đó gần nhất (C) - Q1 2020
-    df.iloc[13,6] = canslim[canslim['Period'] == df.iloc[3,6]]['DilutedEPS_MRQ'].values[0] 
+    df.iloc[13,6] = round(canslim[canslim['Period'] == df.iloc[3,6]],0)['DilutedEPS_MRQ'].values[0] 
     pos = [2,3,4,5,6,7,8,9]
     val = df.iloc[14,pos].values
     for i in range(len(val)):
-        df.iloc[15,pos[i]] = canslim[canslim['Period'] == val[i]]['DilutedEPS_MRQ'].values[0]
+        df.iloc[15,pos[i]] = round(canslim[canslim['Period'] == val[i]],0)['DilutedEPS_MRQ'].values[0]
     pos = [2,3,4,5,6,7,8,9]
     val = df.iloc[16,pos].values
     for i in range(len(val)):
-        df.iloc[17,pos[i]] = canslim[canslim['Period'] == val[i]]['DilutedEPS_MRQ'].values[0]
+        df.iloc[17,pos[i]] = round(canslim[canslim['Period'] == val[i]],0)['DilutedEPS_MRQ'].values[0]
     df.iloc[10,10] = round((df.iloc[11,6] - df.iloc[11,5])/df.iloc[11,5],2)
     df.iloc[12,10] = round((df.iloc[13,6] - df.iloc[13,5])/df.iloc[13,5],2)
     df.iloc[14,10] = round((df.iloc[15,[6,7,8,9]].sum() - df.iloc[15,[2,3,4,5]].sum())/df.iloc[15,[2,3,4,5]].sum(),2)
