@@ -189,5 +189,104 @@ def getInfoCty(id):
     res = requests.get('http://ezsearch.fpts.com.vn/Services/EzData/ProcessLoadRuntime.aspx?s='+id+'&cGroup=Overview&cPath=Services/EzData/OverviewProfile')
     return res.content
 
+@app.route("/api/canslim")
+def getCanSlim():
+    mack = request.args.get('mack')
+    df = pd.read_csv("canslim.csv")
+    header = ['','','','','','','','','','','','Tham chiếu', 'TỶ TRỌNG TỪNG THÀNH PHẦN', 'C', 'A', 'TỔNG ĐIỂM']
+    df.columns = header
+    df = df.replace(np.nan,'')
+    tc = ['',0.25,'', 0.25, '' ,0.2, '',0.2, '', '', 0.25, '', 0.25, '', 0.2, '', 0.2, '']
+    tt = ['',0.15,'', 0.1, '' ,0.1, '',0.05, '', '', 0.2, '', 0.15, '', 0.15, '', 0.1, '']
+    df['Tham chiếu'] = tc
+    df['TỶ TRỌNG TỪNG THÀNH PHẦN'] = tt
+    qt = requests.get('https://www.fireant.vn/api/Data/Finance/LastestFinancialReports?symbol='+mack+'&type=2&year=2021&quarter=1&count=9')
+    dataframe = pd.read_json(qt.content)
+    data = dataframe[["Name", "Values"]]
+    header = [item.get('Period') for item in data["Values"][1]]
+    value = []
+    df2 = pd.DataFrame ([], columns = header)
+    for i in range(len(data)):
+        val = []
+        for item in data["Values"][i]:
+            it = item.get('Value')
+            val.append(it)
+        value.append(val)
+        del val
+    for i in range(len(value)):
+      df2.loc[i] = value[i]
+    name = data['Name']
+    res_kqkd = pd.concat([name, df2], axis=1)
+    res_kqkd.set_index('Name', inplace=True)
+    df.iloc[2,6] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[1,6]]
+    #1 quý gần nhất (C) - Q1 2020
+    df.iloc[2,5] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[1,5]]
+    #1 quý trước đó gần nhất (C) - Q4 2019
+    df.iloc[4,5] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[3,5]]
+    #1 quý trước đó gần nhất (C) - Q1 2020
+    df.iloc[4,6] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[3,6]]
+    #trailing 12 tháng gần nhất (A)
+    #df.iloc[6,[2,3,4,5,6,7,8,9]] = [1,2,3,4,5,6,7,8]
+    df.iloc[6,[2,3,4,5,6,7,8,9]] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[5,[2,3,4,5,6,7,8,9]]].values
+    #trailing 12 tháng gần nhất trước đó (A)
+    df.iloc[8,[2,3,4,5,6,7,8,9]] = res_kqkd.loc['1. Tổng doanh thu hoạt động kinh doanh',df.iloc[7,[2,3,4,5,6,7,8,9]]].values
+    df.iloc[1,10] = round((df.iloc[2,6] - df.iloc[2,5])/df.iloc[2,5],2)
+    df.iloc[3,10] = round((df.iloc[4,6] - df.iloc[4,5])/df.iloc[4,5],2)
+    df.iloc[5,10] = round((df.iloc[6,[6,7,8,9]].sum() - df.iloc[6,[2,3,4,5]].sum())/df.iloc[6,[2,3,4,5]].sum(),2)
+    df.iloc[7,10] = round((df.iloc[8,[6,7,8,9]].sum() - df.iloc[8,[2,3,4,5]].sum())/df.iloc[8,[2,3,4,5]].sum(),2)
+    if df.iloc[1,10] > df.loc[1,"Tham chiếu"] :
+      df.loc[1,"C"] = df.loc[1,"TỶ TRỌNG TỪNG THÀNH PHẦN"] * 100
+    else: df.loc[1,"C"] = (df.iloc[1,10]/df.loc[1,"Tham chiếu"])*df.loc[1,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    if df.iloc[3,10] > df.loc[3,"Tham chiếu"] :
+      df.loc[3,"C"] = df.loc[3,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else: df.loc[3,"C"] = (df.iloc[3,10]/df.loc[3,"Tham chiếu"])*df.loc[3,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    if df.iloc[5,10] > df.loc[5,"Tham chiếu"] :
+      df.loc[5,"A"] = df.loc[5,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else: df.loc[5,"A"] = (df.iloc[5,10]/df.loc[5,"Tham chiếu"])*df.loc[5,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    if df.iloc[7,10] > df.loc[7,"Tham chiếu"] :
+      df.loc[7,"A"] = df.loc[7,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else: df.loc[7,"A"] = (df.iloc[7,10]/df.loc[7,"Tham chiếu"])*df.loc[7,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    canslim_xml = requests.get('https://www.fireant.vn/api/Data/Finance/QuarterlyFinancialInfo?symbol='+mack+'&fromYear=2019&fromQuarter=1&toYear=2021&toQuarter=1')
+    dataframe2 = pd.read_json(canslim_xml.content)
+    canslim = dataframe2[['Year', 'Quarter', 'DilutedEPS_MRQ']]
+    canslim["Period"] = 'Q'+canslim['Quarter'].astype(str) +' '+ canslim['Year'].astype(str) 
+    #Tieu chi EPS
+    #1 quý gần nhất (C) - Q1 2021
+    df.iloc[11,6] = canslim[canslim['Period'] == df.iloc[1,6]]['DilutedEPS_MRQ'].values[0]
+    #1 quý gần nhất (C) - Q1 2020
+    df.iloc[11,5] = canslim[canslim['Period'] == df.iloc[1,5]]['DilutedEPS_MRQ'].values[0]
+    #1 quý trước đó gần nhất (C) - Q4 2019
+    df.iloc[13,5] = canslim[canslim['Period'] == df.iloc[3,5]]['DilutedEPS_MRQ'].values[0] 
+    #1 quý trước đó gần nhất (C) - Q1 2020
+    df.iloc[13,6] = canslim[canslim['Period'] == df.iloc[3,6]]['DilutedEPS_MRQ'].values[0] 
+    pos = [2,3,4,5,6,7,8,9]
+    val = df.iloc[14,pos].values
+    for i in range(len(val)):
+        df.iloc[15,pos[i]] = canslim[canslim['Period'] == val[i]]['DilutedEPS_MRQ'].values[0]
+    pos = [2,3,4,5,6,7,8,9]
+    val = df.iloc[16,pos].values
+    for i in range(len(val)):
+        df.iloc[17,pos[i]] = canslim[canslim['Period'] == val[i]]['DilutedEPS_MRQ'].values[0]
+    df.iloc[10,10] = round((df.iloc[11,6] - df.iloc[11,5])/df.iloc[11,5],2)
+    df.iloc[12,10] = round((df.iloc[13,6] - df.iloc[13,5])/df.iloc[13,5],2)
+    df.iloc[14,10] = round((df.iloc[15,[6,7,8,9]].sum() - df.iloc[15,[2,3,4,5]].sum())/df.iloc[15,[2,3,4,5]].sum(),2)
+    df.iloc[16,10] = round((df.iloc[17,[6,7,8,9]].sum() - df.iloc[17,[2,3,4,5]].sum())/df.iloc[17,[2,3,4,5]].sum(),2)
+    if df.iloc[10,10] > df.loc[10,"Tham chiếu"] :
+      df.loc[10,"C"] = df.loc[10,"TỶ TRỌNG TỪNG THÀNH PHẦN"] * 100
+    else: df.loc[10,"C"] = (df.iloc[10,10]/df.loc[1,"Tham chiếu"])*df.loc[10,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    if df.iloc[12,10] > df.loc[12,"Tham chiếu"] :
+      df.loc[12,"C"] = df.loc[12,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else: df.loc[12,"C"] = (df.iloc[12,10]/df.loc[12,"Tham chiếu"])*df.loc[12,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    if df.iloc[14,10] > df.loc[14,"Tham chiếu"] :
+      df.loc[14,"A"] = df.loc[14,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else: df.loc[14,"A"] = (df.iloc[14,10]/df.loc[14,"Tham chiếu"])*df.loc[14,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    if df.iloc[16,10] > df.loc[16,"Tham chiếu"] :
+      df.loc[16,"A"] = df.loc[16,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else: df.loc[16,"A"] = (df.iloc[16,10]/df.loc[16,"Tham chiếu"])*df.loc[16,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    df.loc[0, 'C'] = df.loc[[1, 3, 10, 12], 'C'].sum()
+    df.loc[0, 'A'] = df.loc[[5, 7, 14, 16], 'A'].sum()
+    df.loc[0,'TỔNG ĐIỂM'] = df.loc[0, 'C'] + df.loc[0, 'A']
+    return df.to_html()
+
 if __name__ == '__main__':
     app.run()
