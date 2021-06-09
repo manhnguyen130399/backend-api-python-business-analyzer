@@ -295,4 +295,4 @@ def getCanSlim():
     "total": df.loc[0, 'C'] + df.loc[0, 'A']}
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5001)
