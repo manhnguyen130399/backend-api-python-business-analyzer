@@ -204,8 +204,8 @@ def _4M_V2():
       import numpy as np
       ind4m = ['Chi so','Sales Growth Rate', 'EPS Growth Rate', 'BVPS Growth Rate', 'Luu chuyen tien thuan tu HDKD', 'No dai han nam gan nhat', 'Effectiveness', 'Efficiency'\
               , 'Productivity', 'ROA', 'ROE', 'ROIC']
-      df = pd.DataFrame ([], columns = [1,3, 5, 'Tham chieu', 'Ty trong', 'Diem TP', 'Tong'], index=ind4m)
-      df.loc['Chi so'] = [0.3, 0.3, 0.4, 0, 0, 0, 0]
+      df = pd.DataFrame ([], columns = [1,3, 5, 'Tham chieu', 'Ty trong', 'Diem TP'], index=ind4m)
+      df.loc['Chi so'] = [0.3, 0.3, 0.4, 0, 0, 0]
       df['Tham chieu'] = [0 ,0.2 ,0.2 ,0.15 ,0.15 ,0 ,0.1 ,0.1 ,0.1 ,0.15 ,0.2 ,0.15]
       df['Ty trong'] = [0 ,0.15 ,0.2 ,0.05 ,0.15 , 0.1 ,0.05 ,0.05 ,0.05 ,0.1 ,0.05 ,0.15]
       index= ['Sales', 'EPS', 'BV', 'Luu chuyen tien thuan tu HDKD', 'Effectiveness', 'Effeciency', 'Productivity', 'ROA', 'ROE', 'ROIC']
@@ -242,11 +242,12 @@ def _4M_V2():
       for i in range(len(df.index) -1):
         total += (df.loc[index_res1[i], 'Ty trong'] * df.loc[index_res1[i], 'Diem TP'])
       #total += df.loc['No dai han nam gan nhat', 'Diem TP']
-      df.loc['Chi so', 'Tong'] = round(total, 2)
+      # df.loc['Chi so', 'Tong'] = round(total, 2)
       return {
         "html":df.to_html(),
         "total":round(total, 2)
     }
+    
 #4M
 @app.route('/api/4m/v2')
 def _4M():
