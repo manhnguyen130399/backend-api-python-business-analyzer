@@ -3,3 +3,4 @@ pandas
 flask
 numpy
 flask_cors
+numpy_financial

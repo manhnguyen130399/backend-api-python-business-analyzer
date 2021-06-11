@@ -5,6 +5,7 @@ import numpy as np
 import json
 from flask_cors import CORS
 import os
+import numpy_financial as npf
 
 app = Flask(__name__)
 CORS(app)
@@ -154,7 +155,7 @@ def _4M():
     #year_end = [2020,2020,2020]
     for a in range(len(arr)):
         for i in range(len(index)):
-            re1 = np.rate(arr[a] ,0,-df4m.loc[index[i], year_start[a]], df4m.loc[index[i], year_end[a]])
+            re1 = npf.rate(arr[a] ,0,-df4m.loc[index[i], year_start[a]], df4m.loc[index[i], year_end[a]])
             df.loc[index_res[i], arr[a]] = re1
     for i in range(len(index)):
       val = []
