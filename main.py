@@ -206,7 +206,7 @@ def _4M_V2():
               , 'Productivity', 'ROA', 'ROE', 'ROIC']
       df = pd.DataFrame ([], columns = [1,3, 5, 'Tham chieu', 'Ty trong', 'Diem TP'], index=ind4m)
       df.loc['Chi so'] = [0.3, 0.3, 0.4, 0, 0, 0]
-      df['Tham chieu'] = [0 ,0.2 ,0.2 ,0.15 ,0.15 ,0 ,0.1 ,0.1 ,0.1 ,0.15 ,0.2 ,0.15]
+      df['Tham chieu'] =[0 ,0.2 ,0.2 ,0.15 ,0.15 ,0 ,0.1 ,0.1 ,0.1 ,0.15 ,0.2 ,0.15]
       df['Ty trong'] = [0 ,0.15 ,0.2 ,0.05 ,0.15 , 0.1 ,0.05 ,0.05 ,0.05 ,0.1 ,0.05 ,0.15]
       index= ['Sales', 'EPS', 'BV', 'Luu chuyen tien thuan tu HDKD', 'Effectiveness', 'Effeciency', 'Productivity', 'ROA', 'ROE', 'ROIC']
       index_res = ['Sales Growth Rate', 'EPS Growth Rate', 'BVPS Growth Rate', 'Luu chuyen tien thuan tu HDKD', 'Effectiveness', 'Efficiency', 'Productivity',\
@@ -243,6 +243,7 @@ def _4M_V2():
         total += (df.loc[index_res1[i], 'Ty trong'] * df.loc[index_res1[i], 'Diem TP'])
       #total += df.loc['No dai han nam gan nhat', 'Diem TP']
       # df.loc['Chi so', 'Tong'] = round(total, 2)
+      df['Tham chieu'] =['0' ,'0.2' ,'0.2' ,'0.15' ,'0.15' ,'0' ,'0.1' ,'0.1' ,'0.1' ,'0.15' ,'0.2' ,'0.15']
       return {
         "html":df.to_html(),
         "total":round(total, 2)
