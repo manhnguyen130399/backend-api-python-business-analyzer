@@ -243,7 +243,7 @@ def _4M_V2():
         total += (df.loc[index_res1[i], 'Ty trong'] * df.loc[index_res1[i], 'Diem TP'])
       #total += df.loc['No dai han nam gan nhat', 'Diem TP']
       # df.loc['Chi so', 'Tong'] = round(total, 2)
-      df['Tham chieu'] =['0' ,'0.2' ,'0.2' ,'0.15' ,'0.15' ,'3*LN= '+ df.loc['No dai han nam gan nhat', 'Tham chieu']   ,'0.1' ,'0.1' ,'0.1' ,'0.15' ,'0.2' ,'0.15']
+      df['Tham chieu'] =['0' ,'0.2' ,'0.2' ,'0.15' ,'0.15' ,'3*LN= '+ str(df.loc['No dai han nam gan nhat', 'Tham chieu'])   ,'0.1' ,'0.1' ,'0.1' ,'0.15' ,'0.2' ,'0.15']
       return {
         "html":df.to_html(),
         "total":round(total, 2)
