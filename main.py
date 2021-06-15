@@ -246,6 +246,7 @@ def _4M_V2():
       df['Tham chieu'] =['0' ,'0.2' ,'0.2' ,'0.15' ,'0.15' ,'3*LN= '+ str(df.loc['No dai han nam gan nhat', 'Tham chieu'])   ,'0.1' ,'0.1' ,'0.1' ,'0.15' ,'0.2' ,'0.15']
       return {
         "html":df.to_html(),
+        "df4m":df4m.to_html(),
         "total":round(total, 2)
     }
     
