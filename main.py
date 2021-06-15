@@ -107,6 +107,7 @@ def LCTT():
 @app.route('/api/4m')
 def _4M_V2():
       mack = request.args.get('symbol')
+      pd.set_option('display.float_format', '{:.2f}'.format)
       df4m = pd.read_json('https://e.cafef.vn/fi.ashx?symbol='+mack)
       maxyear = df4m['Year'].max()
       df4m = df4m[df4m['Year'] >=df4m['Year'].max() -5]
@@ -244,6 +245,7 @@ def _4M_V2():
       #total += df.loc['No dai han nam gan nhat', 'Diem TP']
       # df.loc['Chi so', 'Tong'] = round(total, 2)
       df['Tham chieu'] =['0' ,'0.2' ,'0.2' ,'0.15' ,'0.15' ,'3*LN= '+ str(df.loc['No dai han nam gan nhat', 'Tham chieu'])   ,'0.1' ,'0.1' ,'0.1' ,'0.15' ,'0.2' ,'0.15']
+   
       return {
         "html":df.to_html(),
         "df4m":df4m.to_html(),
