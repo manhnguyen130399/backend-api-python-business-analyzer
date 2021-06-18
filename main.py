@@ -427,17 +427,30 @@ def getCanSlim():
     df.iloc[14,10] = round((df.iloc[15,[6,7,8,9]].sum() - df.iloc[15,[2,3,4,5]].sum())/df.iloc[15,[2,3,4,5]].sum(),2)
     df.iloc[16,10] = round((df.iloc[17,[6,7,8,9]].sum() - df.iloc[17,[2,3,4,5]].sum())/df.iloc[17,[2,3,4,5]].sum(),2)
     if df.iloc[10,10] > df.loc[10,"Tham chiếu"] :
-      df.loc[10,"C"] = df.loc[10,"TỶ TRỌNG TỪNG THÀNH PHẦN"] * 100
-    else: df.loc[10,"C"] = (df.iloc[10,10]/df.loc[1,"Tham chiếu"])*df.loc[10,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+       df.loc[10,"C"] = df.loc[10,"TỶ TRỌNG TỪNG THÀNH PHẦN"] * 100
+    else:
+      if ((df.iloc[10,10]/df.loc[1,"Tham chiếu"])*df.loc[10,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100) < 0:
+            df.loc[10,"C"] = 0
+      else: df.loc[10,"C"] = (df.iloc[10,10]/df.loc[1,"Tham chiếu"])*df.loc[10,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
     if df.iloc[12,10] > df.loc[12,"Tham chiếu"] :
-      df.loc[12,"C"] = df.loc[12,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
-    else: df.loc[12,"C"] = (df.iloc[12,10]/df.loc[12,"Tham chiếu"])*df.loc[12,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+       df.loc[12,"C"] = df.loc[12,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else: 
+      if ((df.iloc[12,10]/df.loc[12,"Tham chiếu"])*df.loc[12,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100) <0:
+          df.loc[12,"C"] = 0
+      else: df.loc[12,"C"] = (df.iloc[12,10]/df.loc[12,"Tham chiếu"])*df.loc[12,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+      
     if df.iloc[14,10] > df.loc[14,"Tham chiếu"] :
-      df.loc[14,"A"] = df.loc[14,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
-    else: df.loc[14,"A"] = (df.iloc[14,10]/df.loc[14,"Tham chiếu"])*df.loc[14,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+       df.loc[14,"A"] = df.loc[14,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else:
+       if ((df.iloc[14,10]/df.loc[14,"Tham chiếu"])*df.loc[14,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100) <0:
+          df.loc[14,"A"] = 0
+       else: df.loc[14,"A"] = (df.iloc[14,10]/df.loc[14,"Tham chiếu"])*df.loc[14,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
     if df.iloc[16,10] > df.loc[16,"Tham chiếu"] :
-      df.loc[16,"A"] = df.loc[16,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
-    else: df.loc[16,"A"] = (df.iloc[16,10]/df.loc[16,"Tham chiếu"])*df.loc[16,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+       df.loc[16,"A"] = df.loc[16,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
+    else: 
+      if ((df.iloc[16,10]/df.loc[16,"Tham chiếu"])*df.loc[16,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100) <0:
+            df.loc[16,"A"] = 0
+      else: df.loc[16,"A"] = (df.iloc[16,10]/df.loc[16,"Tham chiếu"])*df.loc[16,"TỶ TRỌNG TỪNG THÀNH PHẦN"] *100
     df.loc[0, 'C'] = df.loc[[1, 3, 10, 12], 'C'].sum()
     df.loc[0, 'A'] = df.loc[[5, 7, 14, 16], 'A'].sum()
     # df.loc[0,'TỔNG ĐIỂM'] = df.loc[0, 'C'] + df.loc[0, 'A']
